@@ -1,0 +1,9 @@
+{
+  "name": "renewal-radar",
+  "private": true,
+  "type": "module",
+  "description": "What lapses next, and is it close enough to do something about?",
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\""
+  }
+}

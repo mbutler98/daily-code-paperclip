@@ -1,0 +1,39 @@
+name: CI
+
+# Runs every project's tests. Convention: each project lives in /<slug>/ and keeps
+# its tests in /<slug>/tests/*.test.js, run with Node's built-in test runner.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test every project
+        run: |
+          set -euo pipefail
+          found=0
+          for dir in */; do
+            project="${dir%/}"
+            if compgen -G "$project/tests/*.test.js" > /dev/null; then
+              found=1
+              echo "::group::$project"
+              (cd "$project" && node --test "tests/**/*.test.js")
+              echo "::endgroup::"
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No project tests found" >&2
+            exit 1
+          fi
